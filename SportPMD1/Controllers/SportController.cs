@@ -136,14 +136,14 @@ namespace SportPMD.Controllers
             return new JsonResult(lista);
         }
 
-        [HttpGet]
+        /*[HttpGet]
         [Route("GetAllProducts")]
         public async Task<IActionResult> GetAllProdcuts()
         {
             var collection = db.GetCollection<Product>("Product");
             var products = collection.Find(x => true).ToList();
             return new JsonResult(products);
-        }
+        }*/
 
         [Route("AddCategory/{ime}")]
         [HttpPost]
@@ -263,6 +263,15 @@ namespace SportPMD.Controllers
         }
 
         [HttpGet]
+        [Route("GetUserByRole/{role}")]
+        public async Task<IActionResult> GetUserByRole([FromRoute] string role)
+        {
+            var collection = db.GetCollection<User>("User");
+            var user = collection.Find(x => x.Role == role).FirstOrDefault();
+            return new JsonResult(user);
+        }
+
+        [HttpGet]
         [Route("GetProductByName/{name}")]
         public async Task<IActionResult> GetProductByName([FromBody] string name)
         {
@@ -310,6 +319,24 @@ namespace SportPMD.Controllers
 
         }
 
+        [HttpPut]
+        [Route("UpdateOcena/{identifikator}/{ocena}")]
+        public string UpdateOcena(string identifikator, int ocena)
+        {
+            var collection = db.GetCollection<Category>("Category");
+            var collection2 = db.GetCollection<Product>("Products");
+
+            var filter = collection2.Find(x => x.Name == identifikator).FirstOrDefault();
+
+            filter.Ocena = ocena;
+            var filt = Builders<Product>.Filter.Eq(s => s.Id, filter.Id);
+
+            collection2.FindOneAndUpdate(filt, filter.ToBsonDocument());
+
+            return "GG";
+
+        }
+
         [Route("UpdateProduct/{identifikator}/{name}/{price}/{brand}/{ocena}/{discount}/{gender}/{image}")]
         [HttpPut]
         public string UpdateProduct(string identifikator, string name,int price, string brand, int ocena, int discount, string gender, string image)
@@ -345,7 +372,7 @@ namespace SportPMD.Controllers
             return new JsonResult(category);
         }
 
-        [HttpDelete]
+        /*[HttpDelete]
         [Route("DeleteProductByName/{name}")]
         public async Task<IActionResult> DeleteProductByName(string name)
         {
@@ -353,7 +380,7 @@ namespace SportPMD.Controllers
             var filter = Builders<Product>.Filter.Eq(x => x.Name, name);
             collection.DeleteOne(filter);
             return Ok();
-        }
+        }*/
 
         [HttpDelete]
         [Route("DeleteUserByUsername/{username}")]
@@ -416,186 +443,5 @@ namespace SportPMD.Controllers
             collection.UpdateOne(filter, update);
             return Ok();
         }
-
-        /*[HttpGet]
-        [Route("FilterShoes")]
-        public async Task<IActionResult> FilterShoes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Obuca");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterClothes")]
-        public async Task<IActionResult> FilterClothes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Odeca");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterMenShoes")]
-        public async Task<IActionResult> FilterMenShoes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Muske patike");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterWomenShoes")]
-        public async Task<IActionResult> FilterWomenShoes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Zenske patike");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterMenClothes")]
-        public async Task<IActionResult> FilterMenClothes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Muska odeca");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterWomenClothes")]
-        public async Task<IActionResult> FilterWomenClothes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Zenska odeca");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterEquipment")]
-        public async Task<IActionResult> FilterEquipment()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Oprema");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterMenEquipment")]
-        public async Task<IActionResult> FilterMenEquipment()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Muska oprema");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterWomenEquipment")]
-        public async Task<IActionResult> FilterWomenEquipment()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Zenska oprema");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterSupplements")]
-        public async Task<IActionResult> FilterSuplements()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Suplementi i vitamini");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterSprave")]
-        public async Task<IActionResult> FilterSprave()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Sprave za trening");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterBoysShoes")]
-        public async Task<IActionResult> FilterBoysShoes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Obuca za decake");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterGirlsShoes")]
-        public async Task<IActionResult> FilterGirlsShoes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Obuca za devojcice");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterBoysClothes")]
-        public async Task<IActionResult> FilterBoysClothes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Odeca");
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Muski");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }
-
-        [HttpGet]
-        [Route("FilterGirlsClothes")]
-        public async Task<IActionResult> FilterGirlsClothes()
-        {
-            var collectionProducts = db.GetCollection<Product>("Product");
-
-            var filterMenShoes = Builders<Product>.Filter.Eq(x => x.Kategorija, "Odeca za devojcice");
-
-            var product = collectionProducts.Find(filterMenShoes).ToList();
-            return new JsonResult(product);
-        }*/
     }
 }

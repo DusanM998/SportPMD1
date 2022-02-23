@@ -20,5 +20,8 @@ namespace SportPMD1
         public string PhoneNumber { get; set; }
         public string Address { get; set; }
         public string Pol { get; set; }
+
+        //[BsonIgnore]
+        public string Role { get; set; }
     }
 }
